@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>oneForLoopLogicSudoku</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    table{
+      margin-top:2%;
+    }
+    .tdclass{
+      border: 1px solid black;
+      text-align: center;
+      overflow:hidden;
+    }
+    .seperator{
+      width: 2%;
+    }
+    #content{
+      width: 80%;
+      margin: auto;
+    }
+    input{
+      width:100%; 
+      height: 5vw; 
+      padding:auto; 
+      border:none; 
+      text-align: center;
+      color:white;
+      background-color: purple;
+      font-size: 5vmin;
+    }
+    .buttondiv{
+      width: 100%;
+      text-align: center;
+    }
+    button{
+      margin-top:3%;
+      width: 50%;
+      min-height: 4vw;
+      border: none;
+      background-color: purple;
+      border-radius: 1em;
+      color:white;
+      font-size: 5vmin;
+      padding: 1%;
+    }
+    @media only screen and (max-width: 600px) {
+      button{
+        height: 7vw;
+      }
+      #content{
+        width: 100%;
+        margin: auto;
+      }
+      input{
+        height: 9vw;
+      }
+  }
+  </style>
+</head>
+<body style="background-color: black">
+<div id="content">  
+</div>
+<div class="buttondiv">
+  <button onclick="check()">check</button>
+</div>
+</body>
+<script type="text/javascript">
+
+//generates Sudoku Field
+rowCount = 0;
+bucketCount = 0;
+bucketCountReset = 0;
+for (var t = 0; t < 3; t++) {
+  var paral = document.createElement("table");
+  document.getElementById("content").appendChild(paral);
+  for (var i = 0; i < 3; i++) {
+    var para = document.createElement("tr");
+    paral.appendChild(para);
+    for (var u = 0; u < 9; u++) {
+      if(u % 3 == 0){
+        bucketCount++;
+        var para4 = document.createElement("td");
+        para4.className="seperator";
+        para.appendChild(para4); 
+      }    
+      var para3 = document.createElement("td");
+      para3.className ="tdclass"
+      para3.innerHTML ="<input min='1' max='9' id='"+bucketCount+"_"+(i+rowCount)+"_"+u+"' onclick='getOldValue(this.value)' onchange='addTo("+bucketCount+","+(i+rowCount)+","+u+",this.value,this.id)' type='number'>" 
+      para.appendChild(para3);
+    }
+    bucketCount = bucketCountReset;
+  }
+
+  rowCount = rowCount+3;
+  bucketCount = bucketCount+3;
+  bucketCountReset = bucketCount;
+}
+
+//level boilerplate
+var level1 = {"1_0_1":3,"2_1_3":1,"2_1_4":9,"2_1_5":5, "1_2_2":8,"3_2_7":6,"4_3_0":8,"5_3_4":6,"4_4_0":4,"5_4_3":8,"6_4_8":1,"5_5_4":2,"7_6_1":6,"9_6_6":2,"9_6_7":8,"8_7_3":4,"8_7_4":1,"8_7_5":9,"9_7_8":5,"9_8_7":7}
+
+
+//the nightmare begins :P and the logic
+
+//massive type of hashmap
+var buckets = [{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0}];
+var rows = [{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0}];
+var columns = [{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0},{"1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,"9":0}];
+
+//Set
+var bucketSet = [new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set()]
+var rowSet = [new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set()]
+var columnSet = [new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set(),new Set()]
+oldValue = 0;
+
+//add function
+function addTo(bucket,row,column,value,id){
+  //check if value only between 1 and 9
+  if(value <= 0 || value > 9){
+    document.getElementById(id).value="";
+  }else{
+    //checks if oldNumber and decrement oldNumber and increment new number
+    if(oldValue!=0){
+      buckets[bucket-1][oldValue]--;
+      buckets[bucket-1][value]++;
+      rows[row][oldValue]--;
+      rows[row][value]++;
+      columns[column][oldValue]--;
+      columns[column][value]++;
+    }else{
+      //triggers only while level load
+      buckets[bucket-1][value]++;
+      rows[row][value]++;
+      columns[column][value]++;
+    }
+
+    //checks if oldNumber is 0 in all Hashmaps and delete from Set if
+    if(buckets[bucket-1][oldValue] == 0){
+      bucketSet[bucket-1].delete(oldValue);
+    }
+    if(rows[row][oldValue] == 0){
+      rowSet[row].delete(oldValue);
+    }
+    if(columns[column][oldValue] == 0){
+      columnSet[column].delete(oldValue);
+    }
+
+    //checks if the actual value is bigger or 1 and add to Set
+    if(buckets[bucket-1][value] >= 1){
+      bucketSet[bucket-1].add(value);
+    }
+    if(rows[row][value] >= 1){
+      rowSet[row].add(value);
+    }
+    if(columns[column][value] >= 1){
+      columnSet[column].add(value);
+    }
+  }
+  console.log(bucketSet);
+  console.log(rowSet);
+  console.log(columnSet);
+}
+
+//gets the oldNumer of the input field
+getOldValue = (val) =>{
+  oldValue = val;
+  console.log(oldValue)
+}
+
+//check if the size of each Set is 9
+check = () =>{
+  err = false;
+  //ONLY FOR LOOP IN LOGIC!
+  for (var ts = 0; ts < 9; ts++) {
+    if(bucketSet[ts].size !=9 || columnSet[ts].size !=9 || rowSet[ts].size != 9){
+      alert("fail");
+      err = true;
+      break;
+    }
+  }
+  if(err == false){
+    alert("nice no errors :) ");
+  }
+}
+
+//load level
+for (const [key, value] of Object.entries(level1)) {
+  document.getElementById(key).value = value;
+  document.getElementById(key).style.background = "darkslategrey";
+  document.getElementById(key).disabled = true;
+  document.getElementById(key).onchange();
+}
+
+</script>
+</html>
